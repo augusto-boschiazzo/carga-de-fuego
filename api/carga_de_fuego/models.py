@@ -65,6 +65,11 @@ class ObjetoSector(models.Model):
     def __str__(self):
         return f'{self.objeto} en {self.sector} ({self.cantidad})'
 
+class UsuarioSector(models.Model):
+    id = models.AutoField(primary_key=True)
+    usuario = models.ForeignKey('Usuario', on_delete=models.CASCADE)
+    sector = models.ForeignKey('Sector', on_delete=models.CASCADE)
+
 class Sector(models.Model):
     id = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=100)
@@ -78,6 +83,7 @@ class Sector(models.Model):
     riesgo = models.ForeignKey('Riesgo', on_delete=models.CASCADE)
     tipo_de_material = models.ForeignKey('TipoDeMaterial', on_delete=models.CASCADE)
     ventilacion = models.ForeignKey('Ventilacion', on_delete=models.CASCADE)
+    usuarios = models.ManyToManyField(Usuario, through='UsuarioSector', related_name='sectores')
 
     def __str__(self):
         return f'Sector: {self.nombre}, Empresa: {self.empresa}, Actividad: {self.actividad}'

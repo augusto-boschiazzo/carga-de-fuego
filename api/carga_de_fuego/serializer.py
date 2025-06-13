@@ -74,6 +74,18 @@ class ObjetoSectorSerializer(serializers.ModelSerializer):
         model = ObjetoSector
         fields = ['id', 'objeto', 'objeto_id', 'sector', 'cantidad']
 
+class UsuarioSectorSerializer(serializers.ModelSerializer):
+    usuario = UsuarioSerializer(read_only=True)
+    usuario_id = serializers.PrimaryKeyRelatedField(
+        source='usuario',
+        queryset=Usuario.objects.all(),
+        write_only=True
+    )
+
+    class Meta:
+        model = UsuarioSector
+        fields = ['id', 'usuario', 'usuario_id', 'sector']
+
 class SectorSerializer(serializers.ModelSerializer):
     material_predominante = MaterialSerializer(read_only=True)
     material_predominante_id = serializers.PrimaryKeyRelatedField(
@@ -107,8 +119,13 @@ class SectorSerializer(serializers.ModelSerializer):
         child=serializers.IntegerField(),
         write_only=True
     )
-
     objeto_sector_set = ObjetoSectorSerializer(many=True, read_only=True)
+    
+    usuarios = serializers.ListField(
+        child=serializers.IntegerField(),
+        write_only=True
+    )
+    usuario_sector_set = UsuarioSectorSerializer(many=True, read_only=True)
 
     class Meta:
         model = Sector
@@ -116,12 +133,14 @@ class SectorSerializer(serializers.ModelSerializer):
             'id', 'nombre', 'empresa', 'fecha', 'actividad',
             'largo', 'ancho', 'material_predominante', 'material_predominante_id',
             'riesgo', 'riesgo_id', 'tipo_de_material', 'tipo_de_material_id',
-            'ventilacion', 'ventilacion_id', 'objetos', 'objeto_sector_set'
+            'ventilacion', 'ventilacion_id', 'objetos', 'objeto_sector_set',
+            'usuarios', 'usuario_sector_set'
         ]
-        read_only_fields = ['objeto_sector_set']
+        read_only_fields = ['objeto_sector_set', 'usuario_sector_set']
 
     def create(self, validated_data):
         objetos_ids = validated_data.pop('objetos', [])
+        usuarios_ids = validated_data.pop('usuarios', [])
         sector = Sector.objects.create(**validated_data)
 
         for objeto_id in objetos_ids:
@@ -130,7 +149,13 @@ class SectorSerializer(serializers.ModelSerializer):
                 sector=sector,
                 cantidad=1
             )
-        
+
+        for usuario_id in usuarios_ids:
+            UsuarioSector.objects.create(
+                usuario_id=usuario_id,
+                sector=sector
+            )
+
         return sector
 
 class PotencialExtintorSerializer(serializers.ModelSerializer):
