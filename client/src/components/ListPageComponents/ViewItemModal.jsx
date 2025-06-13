@@ -1,0 +1,48 @@
+import {
+    Modal,
+    ModalContent,
+    ModalHeader,
+    ModalBody,
+    ModalFooter,
+} from "@heroui/react";
+import React from "react";
+
+export default function ViewItemModal({
+    isOpen,
+    onOpenChange,
+    infoShow,
+    itemInfo,
+    databaseInfo,
+    itemName,
+}) {
+    const newProps = {
+        itemInfo: itemInfo,
+        databaseInfo: databaseInfo,
+    };
+
+    return (
+        <Modal
+            isOpen={isOpen}
+            onOpenChange={onOpenChange}
+            size="3xl"
+            className="dark text-[#DBDDE1]"
+        >
+            <ModalContent>
+                {(onClose) => (
+                    <>
+                        <ModalHeader className="flex flex-col gap-1">
+                            {"Detalles de " + itemName}
+                        </ModalHeader>
+                        <ModalBody>
+                            {React.cloneElement(infoShow, {
+                                ...infoShow.props,
+                                ...newProps,
+                            })}
+                        </ModalBody>
+                        <ModalFooter />
+                    </>
+                )}
+            </ModalContent>
+        </Modal>
+    );
+}

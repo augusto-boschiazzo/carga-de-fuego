@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.hashers import make_password, check_password
 
 class Material(models.Model):
     id = models.AutoField(primary_key=True)
@@ -26,6 +27,13 @@ class Usuario(models.Model):
 
     def __str__(self):
         return f'{self.apellido} {self.nombre} ({self.email})'
+    
+    def set_password(self, raw_password):
+        self.password = make_password(raw_password)
+        self.save()
+
+    def check_password(self, raw_password):
+        return check_password(raw_password, self.password)
 
 class Riesgo(models.Model):
     id = models.AutoField(primary_key=True)
