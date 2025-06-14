@@ -1,4 +1,4 @@
-import React from "react";
+import React, { use } from "react";
 import Carousel from "../CarouselComponents/Carousel";
 import {
     Button,
@@ -8,7 +8,9 @@ import {
     SelectItem,
     Textarea,
 } from "@heroui/react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, set, useForm } from "react-hook-form";
+import ObjectList from "../ObjectList";
+import { objetosApi } from "../../api/objetos.api";
 
 const InputField = ({ children }) => {
     return <fieldset className="flex items-center gap-3">{children}</fieldset>;
@@ -148,8 +150,8 @@ function secondStep({
                         isRequired
                         isDisabled={currentSlide !== 1}
                     >
-                        <SelectItem value="natural">Natural</SelectItem>
-                        <SelectItem value="mecanica">Mecánica</SelectItem>
+                        <SelectItem key={1}>Natural</SelectItem>
+                        <SelectItem key={2}>Mecánica</SelectItem>
                     </Select>
                 </InputField>
             </div>
@@ -166,14 +168,19 @@ function secondStep({
     );
 }
 
-function thirdStep({ currentSlide, setSectorData }) {
+function thirdStep({ currentSlide, setSectorData, objetosList }) {
     const onSubmit = (data) => {
         console.log("Form submitted in step 3 with data:", data);
         // Handle form submission logic here
         setSectorData((prevData) => ({ ...prevData, ...data }));
     };
 
-    return <div className="flex flex-col gap-4 p-8">Objetos</div>;
+    return (
+        <div className="flex flex-col gap-4 p-8">
+            <h3 className="text-xl font-semibold mb-4">Objetos</h3>
+            <ObjectList objetos={objetosList} />
+        </div>
+    );
 }
 
 function fourthStep({ currentSlide, setSectorData }) {
@@ -189,6 +196,18 @@ function fourthStep({ currentSlide, setSectorData }) {
 export default function SectorCreateForm() {
     const [currentSlide, setCurrentSlide] = React.useState(0);
     const [sectorData, setSectorData] = React.useState({});
+    const [objetosList, setObjetosList] = React.useState([]);
+
+    React.useEffect(() => {
+        objetosApi
+            .getAllObjetos()
+            .then((response) => {
+                setObjetosList(response);
+            })
+            .catch((error) => {
+                console.error("Error fetching objetos:", error);
+            });
+    }, []);
 
     const { register, control, handleSubmit } = useForm();
 
@@ -211,6 +230,7 @@ export default function SectorCreateForm() {
         thirdStep({
             currentSlide,
             setSectorData,
+            objetosList,
         }),
         fourthStep({
             currentSlide,
@@ -220,7 +240,12 @@ export default function SectorCreateForm() {
 
     return (
         <div className="p-4">
-            <h2 className="text-3xl font-bold mb-4">Crear Sector</h2>
+            <h2
+                className="text-3xl font-bold mb-4"
+                onClick={() => console.log(sectorData)}
+            >
+                Crear Sector
+            </h2>
             <Carousel
                 slides={SLIDES}
                 options={OPTIONS}
