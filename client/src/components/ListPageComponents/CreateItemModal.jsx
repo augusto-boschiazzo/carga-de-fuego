@@ -17,7 +17,7 @@ export default function CreateItemModal({
         <Modal
             isOpen={isOpen}
             onOpenChange={onOpenChange}
-            size="3xl"
+            size="4xl"
             className="dark text-[#DBDDE1]"
         >
             <ModalContent>

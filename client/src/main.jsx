@@ -10,6 +10,7 @@ import ObjetosPage from "./pages/ObjetosPage";
 import { AuthProvider } from "./contexts/AuthContext";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import SectoresPage from "./pages/SectoresPage";
 
 createRoot(document.getElementById("root")).render(
     <StrictMode>
@@ -25,6 +26,10 @@ createRoot(document.getElementById("root")).render(
                                 element={<MaterialesPage />}
                             />
                             <Route path="/objetos" element={<ObjetosPage />} />
+                            <Route
+                                path="/sectores"
+                                element={<SectoresPage />}
+                            />
                         </Route>
                         <Route path="/login" element={<LoginPage />} />
                         <Route path="/register" element={<RegisterPage />} />

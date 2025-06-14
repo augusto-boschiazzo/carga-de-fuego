@@ -7,9 +7,13 @@ export default function SidebarLink({ to, setSelected, selected, children }) {
     return (
         <Button
             variant={selected ? "flat" : "light"}
-            onPress={() => (setSelected(to.split("/")[1]), navigate(to))}
+            onPress={() =>
+                selected
+                    ? (setSelected(""), navigate("/"))
+                    : (setSelected(to.split("/")[1]), navigate(to))
+            }
             radius="full"
-            className={selected ? "text-primary w-full" : "w-full"}
+            color={selected ? "primary" : "default"}
         >
             {children}
         </Button>

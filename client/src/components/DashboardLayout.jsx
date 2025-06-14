@@ -64,7 +64,7 @@ export function DashboardLayout() {
                     </Dropdown>
                 </aside>
                 <aside
-                    className="p-4 w-[17%] "
+                    className="p-4 w-[18%] border-r border-gray-600"
                     style={{ backgroundColor: "#22252A" }}
                 >
                     <div className="flex flex-col">
