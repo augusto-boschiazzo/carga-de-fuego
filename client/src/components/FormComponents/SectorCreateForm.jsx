@@ -166,6 +166,26 @@ function secondStep({
     );
 }
 
+function thirdStep({ currentSlide, setSectorData }) {
+    const onSubmit = (data) => {
+        console.log("Form submitted in step 3 with data:", data);
+        // Handle form submission logic here
+        setSectorData((prevData) => ({ ...prevData, ...data }));
+    };
+
+    return <div className="flex flex-col gap-4 p-8">Objetos</div>;
+}
+
+function fourthStep({ currentSlide, setSectorData }) {
+    const onSubmit = (data) => {
+        console.log("Form submitted in step 4 with data:", data);
+        // Handle form submission logic here
+        setSectorData((prevData) => ({ ...prevData, ...data }));
+    };
+
+    return <div className="flex flex-col gap-4 p-8">Confirmar</div>;
+}
+
 export default function SectorCreateForm() {
     const [currentSlide, setCurrentSlide] = React.useState(0);
     const [sectorData, setSectorData] = React.useState({});
@@ -185,6 +205,14 @@ export default function SectorCreateForm() {
             register,
             control,
             handleSubmit,
+            currentSlide,
+            setSectorData,
+        }),
+        thirdStep({
+            currentSlide,
+            setSectorData,
+        }),
+        fourthStep({
             currentSlide,
             setSectorData,
         }),
