@@ -1,4 +1,4 @@
-import React from "react";
+import React, { use } from "react";
 import {
     Table,
     TableHeader,
@@ -32,6 +32,33 @@ export default function ObjectList({ objetos }) {
         direction: "ascending",
     });
     const [page, setPage] = React.useState(1);
+    const [selectedObjects, setSelectedObjects] = React.useState([]);
+
+    React.useEffect(() => {
+        console.log("selectedObjects updated: ", selectedObjects);
+    }, [selectedObjects]);
+
+    const onChangeAmount = (amount, objeto) => {
+        setSelectedObjects((prev) => {
+            const exists = prev.find((item) => item.objeto === objeto);
+            if (amount > 0) {
+                if (exists) {
+                    // Update existing
+                    return prev.map((item) =>
+                        item.objeto === objeto
+                            ? { objeto: item.objeto, cantidad: amount }
+                            : item
+                    );
+                } else {
+                    // Add new
+                    return [...prev, { objeto, cantidad: amount }];
+                }
+            } else {
+                // Remove if amount <= 0
+                return prev.filter((item) => item.objeto !== objeto);
+            }
+        });
+    };
 
     const hasSearchFilter = Boolean(filterValue);
 
@@ -85,10 +112,13 @@ export default function ObjectList({ objetos }) {
                 return (
                     <div className="relative flex justify-end items-center gap-2">
                         <InputAmount
-                            value={cellValue}
-                            onChange={(newValue) => {
-                                console.log("Nuevo valor:", newValue);
-                            }}
+                            initialValue={
+                                selectedObjects.find(
+                                    (item) => item.objeto === objeto.id
+                                )?.cantidad
+                            }
+                            objeto={objeto.id}
+                            onChange={onChangeAmount}
                         />
                     </div>
                 );
@@ -96,18 +126,6 @@ export default function ObjectList({ objetos }) {
                 return cellValue;
         }
     }, []);
-
-    const onNextPage = React.useCallback(() => {
-        if (page < pages) {
-            setPage(page + 1);
-        }
-    }, [page, pages]);
-
-    const onPreviousPage = React.useCallback(() => {
-        if (page > 1) {
-            setPage(page - 1);
-        }
-    }, [page]);
 
     const onRowsPerPageChange = React.useCallback((e) => {
         setRowsPerPage(Number(e.target.value));
@@ -141,38 +159,6 @@ export default function ObjectList({ objetos }) {
                         onClear={() => onClear()}
                         onValueChange={onSearchChange}
                     />
-                    <div className="flex gap-3">
-                        <Dropdown>
-                            <DropdownTrigger className="hidden sm:flex">
-                                <Button
-                                    endContent={
-                                        <ChevronDownIcon className="text-small" />
-                                    }
-                                    variant="flat"
-                                >
-                                    Columns
-                                </Button>
-                            </DropdownTrigger>
-                            <DropdownMenu
-                                disallowEmptySelection
-                                aria-label="Table Columns"
-                                closeOnSelect={false}
-                                selectionMode="multiple"
-                            >
-                                {columns.map((column) => (
-                                    <DropdownItem
-                                        key={column.uid}
-                                        className="capitalize"
-                                    >
-                                        {column.name}
-                                    </DropdownItem>
-                                ))}
-                            </DropdownMenu>
-                        </Dropdown>
-                        <Button color="primary" endContent={<PlusIcon />}>
-                            Add New
-                        </Button>
-                    </div>
                 </div>
                 <div className="flex justify-between items-center">
                     <span className="text-default-400 text-small">
@@ -212,24 +198,6 @@ export default function ObjectList({ objetos }) {
                     total={pages}
                     onChange={setPage}
                 />
-                <div className="hidden sm:flex w-[30%] justify-end gap-2">
-                    <Button
-                        isDisabled={pages === 1}
-                        size="sm"
-                        variant="flat"
-                        onPress={onPreviousPage}
-                    >
-                        Previous
-                    </Button>
-                    <Button
-                        isDisabled={pages === 1}
-                        size="sm"
-                        variant="flat"
-                        onPress={onNextPage}
-                    >
-                        Next
-                    </Button>
-                </div>
             </div>
         );
     }, [items.length, page, pages, hasSearchFilter]);
@@ -237,7 +205,7 @@ export default function ObjectList({ objetos }) {
     return (
         <Table
             isHeaderSticky
-            aria-label="Example table with custom cells, pagination and sorting"
+            aria-label="Lista de objetos"
             bottomContent={bottomContent}
             bottomContentPlacement="outside"
             classNames={{
@@ -259,7 +227,10 @@ export default function ObjectList({ objetos }) {
                     </TableColumn>
                 )}
             </TableHeader>
-            <TableBody emptyContent={"No objetos found"} items={sortedItems}>
+            <TableBody
+                emptyContent={"No se encontraron objetos"}
+                items={sortedItems}
+            >
                 {(item) => (
                     <TableRow key={item.id}>
                         {(columnKey) => (

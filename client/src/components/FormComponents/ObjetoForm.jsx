@@ -14,6 +14,9 @@ import React from "react";
 
 export default function ObjetoForm({ itemInfo, updateItemList, onClose }) {
     const { register, handleSubmit, reset, getValues } = useForm();
+    const [selectedMaterial, setSelectedMaterial] = React.useState(
+        itemInfo?.material?.id || null
+    );
 
     const [materiales, setMateriales] = React.useState([]);
 
@@ -29,6 +32,7 @@ export default function ObjetoForm({ itemInfo, updateItemList, onClose }) {
     }, []);
 
     const onSubmit = (data) => {
+        data.material_id = selectedMaterial;
         itemInfo
             ? objetosApi
                   .updateObjeto(data, itemInfo.id)
@@ -49,7 +53,7 @@ export default function ObjetoForm({ itemInfo, updateItemList, onClose }) {
                           color: "danger",
                       });
                   })
-            : (objetosApi
+            : objetosApi
                   .createObjeto(data)
                   .then(() => {
                       addToast({
@@ -68,8 +72,7 @@ export default function ObjetoForm({ itemInfo, updateItemList, onClose }) {
                           color: "danger",
                       });
                       console.error("Error creating objeto:", error.response);
-                  }),
-              reset());
+                  });
     };
 
     const onError = (errors) => {
@@ -101,11 +104,10 @@ export default function ObjetoForm({ itemInfo, updateItemList, onClose }) {
             <Autocomplete
                 label="Material"
                 defaultSelectedKey={itemInfo?.material.id.toString()}
-                {...register("material_id", {
-                    required: true,
-                    valueAsNumber: true,
-                })}
                 isRequired
+                onSelectionChange={(selected) => {
+                    setSelectedMaterial(selected);
+                }}
             >
                 {materiales.map((material) => (
                     <AutocompleteItem key={material.id}>
