@@ -24,7 +24,11 @@ export const columns = [
     { name: "CANTIDAD", uid: "cantidad" },
 ];
 
-export default function ObjectList({ objetos }) {
+export default function ObjectList({
+    objetos,
+    selectedObjects,
+    setSelectedObjects,
+}) {
     const [filterValue, setFilterValue] = React.useState("");
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [sortDescriptor, setSortDescriptor] = React.useState({
@@ -32,7 +36,6 @@ export default function ObjectList({ objetos }) {
         direction: "ascending",
     });
     const [page, setPage] = React.useState(1);
-    const [selectedObjects, setSelectedObjects] = React.useState([]);
 
     React.useEffect(() => {
         console.log("selectedObjects updated: ", selectedObjects);

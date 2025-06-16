@@ -5,6 +5,8 @@ import MaterialForm from "../components/FormComponents/MaterialForm";
 import MaterialShow from "../components/FormComponents/MaterialShow";
 
 export default function MaterialesPage() {
+    const [loading, setLoading] = React.useState("loading");
+
     const columns = [
         { name: "ID", uid: "id", sortable: true },
         { name: "NOMBRE", uid: "nombre", sortable: true },
@@ -21,9 +23,11 @@ export default function MaterialesPage() {
             .getAllMateriales()
             .then((response) => {
                 setItemList(response);
+                setLoading("idle");
             })
             .catch((error) => {
                 console.error("Error fetching materials:", error);
+                setLoading("idle");
             });
     }
 
@@ -45,6 +49,7 @@ export default function MaterialesPage() {
                 fetchInfo={fetchInfo}
                 itemList={itemList}
                 itemName={"material"}
+                loadingState={loading}
             />
         </section>
     );

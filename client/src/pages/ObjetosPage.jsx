@@ -5,6 +5,8 @@ import ObjetoForm from "../components/FormComponents/ObjetoForm";
 import ObjetoShow from "../components/FormComponents/ObjetoShow";
 
 export default function ObjetosPage() {
+    const [loading, setLoading] = React.useState("loading");
+
     const columns = [
         { name: "ID", uid: "id", sortable: true },
         { name: "NOMBRE", uid: "nombre", sortable: true },
@@ -21,9 +23,11 @@ export default function ObjetosPage() {
             .getAllObjetos()
             .then((response) => {
                 setItemList(response);
+                setLoading("idle");
             })
             .catch((error) => {
                 console.error("Error fetching objetos:", error);
+                setLoading("idle");
             });
     }
 
@@ -46,6 +50,7 @@ export default function ObjetosPage() {
                 itemList={itemList}
                 itemName={"objeto"}
                 handleDelete={objetosApi.deleteObjeto}
+                loadingState={loading}
             />
         </section>
     );

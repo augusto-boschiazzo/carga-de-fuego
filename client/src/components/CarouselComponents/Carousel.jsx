@@ -7,9 +7,9 @@ import {
 } from "./CarouselArrowButtons";
 import "./embla.css";
 import "./base.css";
+import { set } from "react-hook-form";
 
-export default function Carousel(props) {
-    const { slides, options, slideController } = props;
+export default function Carousel({ slides, options, setPageControl }) {
     const [emblaRef, emblaApi] = useEmblaCarousel(options);
     const [scrollProgress, setScrollProgress] = useState(0);
 
@@ -19,6 +19,13 @@ export default function Carousel(props) {
         onPrevButtonClick,
         onNextButtonClick,
     } = usePrevNextButtons(emblaApi);
+
+    useEffect(() => {
+        setPageControl({
+            scrollPrev: emblaApi?.scrollPrev,
+            scrollNext: emblaApi?.scrollNext,
+        });
+    }, [emblaApi]);
 
     const onScroll = useCallback((emblaApi) => {
         const progress = Math.max(0, Math.min(1, emblaApi.scrollProgress()));
@@ -48,23 +55,6 @@ export default function Carousel(props) {
             </div>
 
             <div className="embla__controls">
-                <div className="embla__buttons">
-                    <PrevButton
-                        onClick={() => (
-                            onPrevButtonClick(),
-                            slideController(emblaApi.selectedScrollSnap())
-                        )}
-                        disabled={prevBtnDisabled}
-                    />
-                    <NextButton
-                        onClick={() => (
-                            onNextButtonClick(),
-                            slideController(emblaApi.selectedScrollSnap())
-                        )}
-                        disabled={nextBtnDisabled}
-                    />
-                </div>
-
                 <div className="embla__progress">
                     <div
                         className="embla__progress__bar"

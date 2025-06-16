@@ -86,6 +86,10 @@ class UsuarioSectorSerializer(serializers.ModelSerializer):
         model = UsuarioSector
         fields = ['id', 'usuario', 'usuario_id', 'sector']
 
+class ObjetoInputSerializer(serializers.Serializer):
+    objeto = serializers.IntegerField()
+    cantidad = serializers.IntegerField()
+
 class SectorSerializer(serializers.ModelSerializer):
     material_predominante = MaterialSerializer(read_only=True)
     material_predominante_id = serializers.PrimaryKeyRelatedField(
@@ -115,8 +119,8 @@ class SectorSerializer(serializers.ModelSerializer):
         write_only=True
     )
 
-    objetos = serializers.ListField(
-        child=serializers.IntegerField(),
+    objetos = ObjetoInputSerializer(
+        many=True,
         write_only=True
     )
     objeto_sector_set = ObjetoSectorSerializer(many=True, read_only=True)
@@ -139,15 +143,15 @@ class SectorSerializer(serializers.ModelSerializer):
         read_only_fields = ['objeto_sector_set', 'usuario_sector_set']
 
     def create(self, validated_data):
-        objetos_ids = validated_data.pop('objetos', [])
+        objetos = validated_data.pop('objetos', [])
         usuarios_ids = validated_data.pop('usuarios', [])
         sector = Sector.objects.create(**validated_data)
 
-        for objeto_id in objetos_ids:
+        for objeto in objetos:
             ObjetoSector.objects.create(
-                objeto_id=objeto_id,
+                objeto_id=objeto['objeto'],
                 sector=sector,
-                cantidad=1
+                cantidad=objeto['cantidad']
             )
 
         for usuario_id in usuarios_ids:

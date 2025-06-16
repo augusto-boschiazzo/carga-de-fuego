@@ -15,6 +15,7 @@ import {
     Pagination,
     useDisclosure,
     Tooltip,
+    Spinner,
 } from "@heroui/react";
 import {
     SearchIcon,
@@ -40,6 +41,7 @@ export default function ListItems({
     databaseInfo,
     fetchInfo,
     itemName,
+    loadingState,
 }) {
     const [selectedItem, setSelectedItem] = React.useState();
 
@@ -150,6 +152,8 @@ export default function ListItems({
                             ")"}
                     </p>
                 );
+            case "material_predominante":
+                return <p>{cellValue.nombre}</p>;
             case "actions":
                 return (
                     <div className="relative flex justify-end items-center gap-2">
@@ -393,6 +397,8 @@ export default function ListItems({
                 <TableBody
                     emptyContent={"No se encontraron " + itemName + "s"}
                     items={sortedItems}
+                    loadingState={loadingState}
+                    loadingContent={<Spinner />}
                 >
                     {(item) => (
                         <TableRow key={item.id}>
